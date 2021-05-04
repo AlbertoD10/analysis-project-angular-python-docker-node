@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  backend:
+    container_name: backend
+    build: backend
+    restart: always
+    ports:
+      - "3001:3000"
+    links:
+      - mongo
+    volumes:
+      - ./backend:/app
+
+  frontend:
+    container_name: frontend
+    build: frontend
+    ports:
+      - "4201:4200"
+    restart: always
+    volumes:
+      - ./frontend:/project
+    links:
+      - backend
+      - analysis
+
+  analysis:
+    container_name: pythonservice
+    build: analytic-service
+    ports:
+      - "4001:4000"
+    volumes:
+      - ./analytic-service:/app
+    links:
+      - mongo
+
+  mongo:
+    container_name: mongodb
+    image: mongo
+    restart: always
+    ports:
+      - "27018:27017"
